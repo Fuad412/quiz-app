@@ -1,55 +1,6 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<div class="card" id="results-card">
-    <h1>Your Results</h1>
-    <p class="subtitle">{{ quiz.title }}</p>
-
-    <div class="score-ring">
-        <svg class="circular-chart" viewBox="0 0 36 36"
-            style="--stroke-color: {% if percentage >= 80 %}#10b981{% elif percentage >= 50 %}#f59e0b{% else %}#ef4444{% endif %};">
-            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <path class="circle" id="score-circle" stroke-dasharray="0, 100"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-            <text x="18" y="20.35" class="percentage-text">{{ percentage|floatformat:0 }}%</text>
-        </svg>
-    </div>
-
-    <div class="result-details">
-        <p>You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong></p>
-    </div>
-
-    <div class="results-breakdown">
-        <h3>Question Breakdown</h3>
-        {% for result in results_data %}
-        <div class="breakdown-card {% if result.is_correct %}correct-card{% else %}wrong-card{% endif %}">
-            <h4 class="b-question">{{ forloop.counter }}. {{ result.question_text }}</h4>
-            <div class="b-answers">
-                <div class="b-answer">
-                    <span class="label">Your Answer:</span>
-                    <span class="value">{{ result.selected_choice }}</span>
-                    {% if result.is_correct %}
-                    <span class="icon correct-icon">✓</span>
-                    {% else %}
-                    <span class="icon wrong-icon">✗</span>
-                    {% endif %}
-                </div>
-                {% if not result.is_correct %}
-                <div class="b-answer">
-                    <span class="label">Correct Answer:</span>
-                    <span class="value correct-text">{{ result.correct_choice }}</span>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
-    <div style="margin-top: 3rem; text-align: center;">
-        <a href="{% url 'home' %}" class="btn">Take Another Quiz</a>
-    </div>
-</div>
-
+{% block extra_css %}
 <style>
     .score-ring {
         display: flex;
@@ -160,6 +111,57 @@
     }
 </style>
 {% endblock %}
+
+
+{% block content %}
+<div class="card" id="results-card">
+    <h1>Your Results</h1>
+    <p class="subtitle">{{ quiz.title }}</p>
+
+    <div class="score-ring">
+        <svg class="circular-chart" viewBox="0 0 36 36"
+            style="--stroke-color: {% if percentage >= 80 %}#10b981{% elif percentage >= 50 %}#f59e0b{% else %}#ef4444{% endif %};">
+            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="circle" id="score-circle" stroke-dasharray="0, 100"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <text x="18" y="20.35" class="percentage-text">{{ percentage|floatformat:0 }}%</text>
+        </svg>
+    </div>
+
+    <div class="result-details">
+        <p>You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong></p>
+    </div>
+
+    <div class="results-breakdown">
+        <h3>Question Breakdown</h3>
+        {% for result in results_data %}
+        <div class="breakdown-card {% if result.is_correct %}correct-card{% else %}wrong-card{% endif %}">
+            <h4 class="b-question">{{ forloop.counter }}. {{ result.question_text }}</h4>
+            <div class="b-answers">
+                <div class="b-answer">
+                    <span class="label">Your Answer:</span>
+                    <span class="value">{{ result.selected_choice }}</span>
+                    {% if result.is_correct %}
+                    <span class="icon correct-icon">✓</span>
+                    {% else %}
+                    <span class="icon wrong-icon">✗</span>
+                    {% endif %}
+                </div>
+                {% if not result.is_correct %}
+                <div class="b-answer">
+                    <span class="label">Correct Answer:</span>
+                    <span class="value correct-text">{{ result.correct_choice }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="margin-top: 3rem; text-align: center;">
+        <a href="{% url 'home' %}" class="btn">Take Another Quiz</a>
+    </div>
+</div>
 
 {% block extra_js %}
 <script>

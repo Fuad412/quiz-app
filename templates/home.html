@@ -1,37 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
-<div class="card" id="form-card">
-    <h1>Generate a Quiz</h1>
-    <p class="subtitle">Enter any topic and let AI test your knowledge.</p>
-
-    {% if error %}
-    <div
-        style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 1rem; border-radius: 12px; margin-bottom: 2rem; font-size: 0.9rem;">
-        {{ error }}
-    </div>
-    {% endif %}
-
-    <form method="POST" id="generate-form">
-        {% csrf_token %}
-        <div class="input-group">
-            <input type="text" name="topic" id="topic" placeholder="e.g. History of Rome, Python Basics" required
-                autocomplete="off">
-        </div>
-        <button type="submit" class="btn" id="submit-btn">
-            Generate Now <span style="font-size: 1.2rem; margin-left:8px;">✨</span>
-        </button>
-    </form>
-</div>
-
-<!-- Loading State (Hidden by default) -->
-<div class="card" id="loading-card" style="display: none; text-align: center;">
-    <h2>Crafting your quiz...</h2>
-    <p class="subtitle">Our AI is fetching the best questions about your topic.</p>
-    <div class="spinner"></div>
-</div>
-
+{% block extra_css %}
 <style>
     .input-group {
         position: relative;
@@ -82,6 +52,38 @@
         }
     }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="card" id="form-card">
+    <h1>Generate a Quiz</h1>
+    <p class="subtitle">Enter any topic and let AI test your knowledge.</p>
+
+    {% if error %}
+    <div
+        style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 1rem; border-radius: 12px; margin-bottom: 2rem; font-size: 0.9rem;">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" id="generate-form">
+        {% csrf_token %}
+        <div class="input-group">
+            <input type="text" name="topic" id="topic" placeholder="e.g. History of Rome, Python Basics" required
+                autocomplete="off">
+        </div>
+        <button type="submit" class="btn" id="submit-btn">
+            Generate Now <span style="font-size: 1.2rem; margin-left:8px;">✨</span>
+        </button>
+    </form>
+</div>
+
+<!-- Loading State (Hidden by default) -->
+<div class="card" id="loading-card" style="display: none; text-align: center;">
+    <h2>Crafting your quiz...</h2>
+    <p class="subtitle">Our AI is fetching the best questions about your topic.</p>
+    <div class="spinner"></div>
+</div>
 {% endblock %}
 
 {% block extra_js %}

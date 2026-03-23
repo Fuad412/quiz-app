@@ -1,6 +1,136 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<style>
+    .question-text {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        line-height: 1.5;
+        color: var(--text-main);
+    }
+
+    .options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .option-card {
+        display: flex;
+        align-items: center;
+        background: rgba(30, 41, 59, 0.4);
+        border: 2px solid rgba(148, 163, 184, 0.1);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+    .option-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(148, 163, 184, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .option-card:has(.hidden-radio:checked) {
+        background: rgba(99, 102, 241, 0.15);
+        border-color: var(--secondary);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+    }
+
+    .option-content {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        width: 100%;
+    }
+
+    .option-letter {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-main);
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        flex-shrink: 0;
+        transition: all 0.25s ease;
+    }
+
+    .option-card:has(.hidden-radio:checked) .option-letter {
+        background: var(--secondary);
+        color: white;
+        box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+
+    .option-text {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        transition: color 0.25s;
+    }
+
+    .option-card:has(.hidden-radio:checked) .option-text {
+        color: var(--text-main);
+        font-weight: 500;
+    }
+
+    .hidden-radio {
+        display: none;
+    }
+
+    .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        border-top: 1px solid var(--border);
+        padding-top: 2rem;
+    }
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: var(--text-main) !important;
+        width: auto !important;
+    }
+
+    .next-btn, .submit-btn {
+        width: 150px !important;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    .progress-bar-container {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        height: 8px;
+        margin-bottom: 3rem;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        border-radius: 10px;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="card" id="quiz-container">
     <h1>{{ quiz.title }}</h1>
@@ -25,8 +155,7 @@
                             class="hidden-radio">
                         <span class="option-content">
                             <span class="option-letter">
-                                {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter ==
-                                3 %}C{% else %}D{% endif %}
+                                {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% else %}D{% endif %}
                             </span>
                             <span class="option-text">{{ choice.text }}</span>
                         </span>
