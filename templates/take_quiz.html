@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card" id="quiz-container">
+    <h1>{{ quiz.title }}</h1>
+    <p class="subtitle" id="progress-text">Question 1 of {{ questions_count }}</p>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar" style="width: 0%;"></div>
+    </div>
+
+    <form method="POST" id="quiz-form" action="{% url 'take_quiz' quiz.id %}">
+        {% csrf_token %}
+        <div id="questions-wrapper">
+            {% for question in questions %}
+            <div class="question-step" id="step-{{ forloop.counter }}"
+                style="{% if not forloop.first %}display:none;{% endif %}">
+                <h2 class="question-text">{{ question.text }}</h2>
+
+                <div class="options-grid">
+                    {% for choice in question.choices %}
+                    <label class="option-card">
+                        <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}" required
+                            class="hidden-radio">
+                        <span class="option-content">
+                            <span class="option-letter">
+                                {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter ==
+                                3 %}C{% else %}D{% endif %}
+                            </span>
+                            <span class="option-text">{{ choice.text }}</span>
+                        </span>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <div class="navigation-buttons">
+                    {% if not forloop.first %}
+                    <button type="button" class="btn btn-secondary"
+                        onclick="prevQuestion('{{ forloop.counter }}')">Back</button>
+                    {% else %}
+                    <div></div> {% endif %}
+
+                    {% if forloop.last %}
+                    <button type="submit" class="btn btn-primary submit-btn" disabled>Submit Quiz</button>
+                    {% else %}
+                    <button type="button" class="btn btn-primary next-btn"
+                        onclick="nextQuestion('{{ forloop.counter }}')" disabled>Next</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const totalQuestions = {{ questions_count }};
+
+    // Function to handle enabling buttons
+    function checkSelection(stepId) {
+        const step = document.getElementById(`step-${stepId}`);
+        const nextBtn = step.querySelector('.next-btn');
+        const submitBtn = step.querySelector('.submit-btn');
+        const isChecked = step.querySelector('input[type="radio"]:checked');
+
+        if (isChecked) {
+            if (nextBtn) nextBtn.disabled = false;
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    }
+
+    // Event listeners for radio changes
+    document.querySelectorAll('.question-step').forEach((step, idx) => {
+        step.addEventListener('change', () => checkSelection(idx + 1));
+    });
+
+    function updateProgress(currentStep) {
+        // Calculate based on current question vs total
+        const percent = (currentStep / totalQuestions) * 100;
+        document.getElementById('progress-bar').style.width = percent + '%';
+        document.getElementById('progress-text').innerText = `Question ${currentStep} of ${totalQuestions}`;
+    }
+
+    function nextQuestion(currentId) {
+        currentId = parseInt(currentId, 10);
+        const currentStep = document.getElementById(`step-${currentId}`);
+        const nextStep = document.getElementById(`step-${currentId + 1}`);
+
+        currentStep.style.display = 'none';
+        nextStep.style.display = 'block';
+        nextStep.style.animation = 'fadeInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+
+        checkSelection(currentId + 1); // Check if they already answered it (if they went back)
+        updateProgress(currentId + 1);
+    }
+
+    function prevQuestion(currentId) {
+        currentId = parseInt(currentId, 10);
+        const currentStep = document.getElementById(`step-${currentId}`);
+        const prevStep = document.getElementById(`step-${currentId - 1}`);
+
+        currentStep.style.display = 'none';
+        prevStep.style.display = 'block';
+        prevStep.style.animation = 'fadeInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+
+        checkSelection(currentId - 1);
+        updateProgress(currentId - 1);
+    }
+
+    // Set initial state
+    updateProgress(1);
+</script>
+{% endblock %}

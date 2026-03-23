@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card" id="results-card">
+    <h1>Your Results</h1>
+    <p class="subtitle">{{ quiz.title }}</p>
+
+    <div class="score-ring">
+        <svg class="circular-chart" viewBox="0 0 36 36"
+            style="--stroke-color: {% if percentage >= 80 %}#10b981{% elif percentage >= 50 %}#f59e0b{% else %}#ef4444{% endif %};">
+            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="circle" id="score-circle" stroke-dasharray="0, 100"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <text x="18" y="20.35" class="percentage-text">{{ percentage|floatformat:0 }}%</text>
+        </svg>
+    </div>
+
+    <div class="result-details">
+        <p>You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong></p>
+    </div>
+
+    <div class="results-breakdown">
+        <h3>Question Breakdown</h3>
+        {% for result in results_data %}
+        <div class="breakdown-card {% if result.is_correct %}correct-card{% else %}wrong-card{% endif %}">
+            <h4 class="b-question">{{ forloop.counter }}. {{ result.question_text }}</h4>
+            <div class="b-answers">
+                <div class="b-answer">
+                    <span class="label">Your Answer:</span>
+                    <span class="value">{{ result.selected_choice }}</span>
+                    {% if result.is_correct %}
+                    <span class="icon correct-icon">✓</span>
+                    {% else %}
+                    <span class="icon wrong-icon">✗</span>
+                    {% endif %}
+                </div>
+                {% if not result.is_correct %}
+                <div class="b-answer">
+                    <span class="label">Correct Answer:</span>
+                    <span class="value correct-text">{{ result.correct_choice }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="margin-top: 3rem; text-align: center;">
+        <a href="{% url 'home' %}" class="btn">Take Another Quiz</a>
+    </div>
+</div>
+
+<style>
+    .score-ring {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 2rem 0;
+    }
+
+    .circular-chart {
+        width: 150px;
+        height: 150px;
+    }
+
+    .circle-bg {
+        fill: none;
+        stroke: #374151;
+        stroke-width: 3.8;
+    }
+
+    .circle {
+        fill: none;
+        stroke-width: 3.8;
+        stroke-linecap: round;
+        transition: stroke-dasharray 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        stroke: var(--stroke-color, #ef4444);
+    }
+
+    .percentage-text {
+        fill: #f9fafb;
+        font-family: inherit;
+        font-size: 8px;
+        text-anchor: middle;
+        font-weight: bold;
+    }
+
+    .result-details {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #d1d5db;
+        margin-bottom: 2rem;
+    }
+
+    .results-breakdown {
+        margin-top: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .breakdown-card {
+        background: #1f2937;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #4b5563;
+    }
+
+    .breakdown-card.correct-card {
+        border-left-color: #10b981;
+    }
+
+    .breakdown-card.wrong-card {
+        border-left-color: #ef4444;
+    }
+
+    .b-question {
+        margin-top: 0;
+        margin-bottom: 0.8rem;
+        font-size: 1.1rem;
+        color: #f3f4f6;
+    }
+
+    .b-answers {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .b-answer {
+        display: flex;
+        justify-content: space-between;
+        background: #374151;
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+        font-size: 0.95rem;
+    }
+
+    .label {
+        color: #9ca3af;
+    }
+
+    .value {
+        color: #f9fafb;
+        font-weight: 500;
+    }
+
+    .correct-text {
+        color: #10b981;
+    }
+
+    .correct-icon {
+        color: #10b981;
+        font-weight: 900;
+    }
+
+    .wrong-icon {
+        color: #ef4444;
+        font-weight: 900;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Delay slightly to ensure the transition is visible
+        setTimeout(() => {
+            const circle = document.getElementById('score-circle');
+            const percent = parseFloat("{{ percentage|default:0 }}") || 0;
+            circle.setAttribute('stroke-dasharray', `${percent}, 100`);
+        }, 300);
+    });
+</script>
+{% endblock %}

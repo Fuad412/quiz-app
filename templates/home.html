@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card" id="form-card">
+    <h1>Generate a Quiz</h1>
+    <p class="subtitle">Enter any topic and let AI test your knowledge.</p>
+
+    {% if error %}
+    <div
+        style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 1rem; border-radius: 12px; margin-bottom: 2rem; font-size: 0.9rem;">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" id="generate-form">
+        {% csrf_token %}
+        <div class="input-group">
+            <input type="text" name="topic" id="topic" placeholder="e.g. History of Rome, Python Basics" required
+                autocomplete="off">
+        </div>
+        <button type="submit" class="btn" id="submit-btn">
+            Generate Now <span style="font-size: 1.2rem; margin-left:8px;">✨</span>
+        </button>
+    </form>
+</div>
+
+<!-- Loading State (Hidden by default) -->
+<div class="card" id="loading-card" style="display: none; text-align: center;">
+    <h2>Crafting your quiz...</h2>
+    <p class="subtitle">Our AI is fetching the best questions about your topic.</p>
+    <div class="spinner"></div>
+</div>
+
+<style>
+    .input-group {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 1.5rem 1.5rem;
+        background: rgba(15, 23, 42, 0.6);
+        border: 2px solid var(--border);
+        border-radius: 16px;
+        color: white;
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.2rem;
+        outline: none;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        box-sizing: border-box;
+    }
+
+    .input-group input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    }
+
+    .input-group input::placeholder {
+        color: var(--text-muted);
+    }
+
+    /* Loading Spinner */
+    .spinner {
+        width: 60px;
+        height: 60px;
+        margin: 3rem auto;
+        border: 6px solid var(--border);
+        border-top: 6px solid var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('generate-form').addEventListener('submit', function (e) {
+        document.getElementById('form-card').style.display = 'none';
+        document.getElementById('loading-card').style.display = 'block';
+    });
+</script>
+{% endblock %}
